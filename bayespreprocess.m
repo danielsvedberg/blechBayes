@@ -1,5 +1,9 @@
 %file retrieval
+
+
 [file,destFolder] = uigetfile('.mat','select data_file');
+
+
 name = file(1:4);
 raw = load([destFolder filesep file]);
 cells = struct2cell(raw.spike_trains);
