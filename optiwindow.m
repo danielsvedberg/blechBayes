@@ -43,11 +43,12 @@ if ~exist(path, 'file')
            decodes(index).decode.performance = performance;
        end
     end 
+    save(path,'decodes','-v7.3')
 else
     disp('opti-decodes already exist, loading file')
     load(path, 'decodes');
 
-    save(path,'decodes','-v7.3')
+
 end
 
 end

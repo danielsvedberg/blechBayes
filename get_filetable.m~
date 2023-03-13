@@ -15,7 +15,7 @@ rootpaths = initab.folder; %get all paths to .mat files in main_folder
 rootpaths = convertCharsToStrings(rootpaths); %same as above
 
 prepIdxs = contains(filenames,'preprocessed'); %get indices for preprocessed data
-decodeIdxs = contains(filenames,'tastedecode'); %get indices for decodes
+decodeIdxs = contains(filenames,'decode'); %get indices for decodes
 optiIdxs = contains(filenames,'opti'); %get indices for decode optimizations
 rawIdxs = ~(prepIdxs + decodeIdxs + optiIdxs); %raw files are all the files that are not what's above
 
@@ -30,7 +30,7 @@ anIDs = filechunks(:,:,1);
 dates = filechunks(:,:,end-1);
 rawroots = rootpaths(rawIdxs);
 
-tbl = table(anIDs', dates', rawroots, raw_files , 'VariableNames',["anID", "datestr","root_dir","raw_data_file"]);
+tbl = table(anIDs', dates', raw_files, rawroots, 'VariableNames',["anID", "datestr","root_dir","raw_data_file"]);
 tbl.rec_ID = strcat(tbl.anID,{'_'}, tbl.datestr);
 tbl.date = datetime(tbl.datestr, 'InputFormat','yyMMdd');
 tbl = grouptransform(tbl,'anID',@min,'date','ReplaceValues',false);
@@ -43,9 +43,9 @@ for i = 1:length(rec_IDs)
     optifiles2{i} = opti_files(contains(opti_files, rec_IDs(i)));
 end
 
-tbl.preprocessed_file = convertCharsToStrings(prepfiles2');
-tbl.opti_file = optifiles2';
-tbl.decode_file = decodefiles2';
+tbl.preprocessed_file = prepfiles2;
+tbl.opti_file = optifiles2;
+tbl.decode_file = decodefiles2;
 
 % datainfos = dir('/home/dsvedberg/Documents/MATLAB/**/*spont*.mat');
 % datainfos = datainfos(~contains({datainfos.name}, ["decode","DS23","200201"]));
