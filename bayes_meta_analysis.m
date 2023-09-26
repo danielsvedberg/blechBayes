@@ -27,14 +27,16 @@
 %regular decoding meta analysis
 filetable = get_filetable();
 meta = table();
-days = unique(filetable.session);
-exp = unique(filetable.experience);
+daysElap = unique(filetable.session);
+exp = unique(filetable.exp_group);
 idx = 1;
-for d = days'
+for d = daysElap'
     for cond = 1:length(exp)
+        meta.root(idx) = filetable.root_dir(idx);
         meta.day(idx) = d;
         meta.cond(idx) = exp(cond);
-        meta.files(idx) = {filetable.decodefile(filetable.session == d & filetable.experience == exp(cond))};
+        rows = filetable.session == d & filetable.exp_group == exp(cond);
+        meta.files{idx} = string(filetable.root_dir(rows)) + filesep + string(filetable.decode_file(rows));
         meta.n_an(idx) = length(meta.files{idx});
         for i = 1:meta.n_an(idx)
             load(meta.files{idx}(i))
@@ -60,13 +62,13 @@ end
 filetable = get_filetable();
 nrnavgmeta = table();
 days = unique(filetable.session);
-exp = unique(filetable.experience);
+exp = unique(filetable.exp_group);
 idx = 1;
 for d = days'
     for cond = 1:length(exp)
         nrnavgmeta.day(idx) = d;
         nrnavgmeta.cond(idx) = exp(cond);
-        nrnavgmeta.files(idx) = {filetable.decodefile(filetable.session == d & filetable.experience == exp(cond))};
+        nrnavgmeta.files(idx) = {filetable.decode_file(filetable.session == d & filetable.exp_group == exp(cond))};
         nrnavgmeta.n_an(idx) = length(nrnavgmeta.files{idx});
         for i = 1:nrnavgmeta.n_an(idx)
             load(nrnavgmeta.files{idx}(i))

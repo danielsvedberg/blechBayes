@@ -43,9 +43,24 @@ for i = 1:length(rec_IDs)
     optifiles2{i} = opti_files(contains(opti_files, rec_IDs(i)));
 end
 
-tbl.preprocessed_file = convertCharsToStrings(prepfiles2');
+tbl.preprocessed_file = string(prepfiles2');
 tbl.opti_file = optifiles2';
 tbl.decode_file = decodefiles2';
+
+IDs = unique(tbl.anID);
+
+exp_groups = {};
+for i = 1:length(IDs)
+    ID = IDs(i);
+    prompt = 'enter experiment group for ' + ID + ':';
+    exp_groups{i} =  inputdlg(prompt);
+end
+
+IDtbl = cell2table(exp_groups','VariableNames',["exp_group"]);
+IDtbl.anID = IDs;
+IDtbl.exp_group = string(IDtbl.exp_group);
+
+tbl = join(tbl,IDtbl, 'Keys','anID');
 
 % datainfos = dir('/home/dsvedberg/Documents/MATLAB/**/*spont*.mat');
 % datainfos = datainfos(~contains({datainfos.name}, ["decode","DS23","200201"]));

@@ -1,8 +1,10 @@
 %By Daniel Svedberg, May 2020.
 %%%Inputs: 
+
 %%dat (data) 
 % size: [neurons, trials, time-bins]. Order of trials should correspond to 
 % trainind and decind
+
 %%trainind (training index)
 % size: [trials,#decoding-states for the trial]. Each trial should contain 
 % an integer representing the true state corresponding to the trial. A 
@@ -11,9 +13,10 @@
 % additional states pertaining to the trial (for example, if the first 
 % 1000ms is state 1, and the last 2000ms is state 2, trainind(trial,:) =
 % [1,2]
+
 %%decind (decode index)
-% size: [trials,#decoding-states for the trial]. Same as trainind except
-% that there are no excluded trials. 
+% size: [trials,#decoding-states for the trial]. Size needs to match trainind
+
 %%windows (window index)
 % size: [# states, 2] windows(:,1) = start index of the window,
 % windows(:,2) = end index of the window. windows tells the script what
@@ -35,20 +38,20 @@ n_wins = size(decind,1);
 decode.winpost = zeros(sts,trls,n_wins);
 
 for trl = 1:trls %each loop is an iteration of the jacknife
-    test = squeeze(dat(:,trl,:));
-    pdfs = zeros(sts,bins);
-    winpdfs = zeros(sts,n_wins);
-    trlTst = decind(:,trl);
-    testSt = windows(trlTst,1);
-    testEnd = windows(trlTst,2);
+    test = squeeze(dat(:,trl,:)); %test is the trial that is being decoded this loop
+    pdfs = zeros(sts,bins); %pdfs will store the state probabilities for each bin
+    winpdfs = zeros(sts,n_wins); %winpdfs will store the state probabilities for each window-of-interest--used as the "trial accuracy"
+    trlSt = decind(:,trl); %get the state of this trial for the test
+    testSt = windows(trlSt,1); %establish the start of the test window
+    testEnd = windows(trlSt,2); %establish the end of the test window
     
-    iterind = trainind;
+    iterind = trainind; %make a copy of the training index, leaving out the current trial from training
     iterind(:,trl) = 0;
     
     for i = 1:sts
-        stTrls = logical(sum(iterind == i,1));
-        train = squeeze(dat(:,stTrls, :)); 
-        winSt = windows(i,1);
+        stTrls = logical(sum(iterind == i, 1)); %gets the indices of trials in which the state of interest is present
+        train = squeeze(dat(:,stTrls, :)); %pull the data for only trials where the state of interest is present
+        winSt = windows(i,1); 
         winEnd = windows(i,2);
 
         samp = reshape(permute(squeeze(train(:,:,winSt:winEnd)),[1,3,2]),nrns,[]);
