@@ -31,19 +31,32 @@ unique_exp_names = unique(exp_names);
 n_exp = length(unique_exp_names);
 exp_names = string(exp_names);
 
-decodes = cell(n_exp,1);
-shuff_decodes = cell(n_exp,1);
-n_neurons = cell(n_exp,1);
+good_exps = {};
+ensembles = {};
+n_neurons = {};
 for i = 1:n_exp
     exp_name = unique_exp_names{i};
     exp_idx = exp_names == exp_name;
     eu_ens = eu(exp_idx);
     n_nrn = length(eu_ens);
+
     if n_nrn >= 5
-        decodes{i} = ensemble_decode_assad(eu_ens);
-        shuff_decodes{i} = ensemble_decode_assad_shuffle(eu_ens,10);
-        n_neurons{i} = n_nrn;
+        good_exps{end+1} = exp_name;
+        n_neurons{end+1} = n_nrn;
+        ensembles{end+1} = eu_ens;
     end
+end
+
+n_exps = length(good_exps);
+decodes = cell(good_exps);
+shuff_decodes = cell(good_exps);
+
+parpool(3)
+parfor i = 1:n_exps
+    ensemble = ensembles{i}
+    decodes{i} = ensemble_decode_assad(ensemble);
+    shuff_decodes{i} = ensemble_decode_assad_shuffle(eu_ens,10);
+    n_neurons{i} = n_nrn;
 end
 
 avgPosterior = zeros(18,3,3,8000);
